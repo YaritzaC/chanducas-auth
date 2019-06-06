@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+
+ customers:
+  build:
+    context: ./services/customers
+    dockerfile: Dockerfile
+  volumes:
+   - './services/customers:/customers/src/app'
+  ports:
+    - 5003:5000
+  environment:
+    - FLASK_APP=project/__init__.py
+    - FLASK_ENV=development
+    - APP_SETTINGS=project.config.DevelopmentConfig  # nuevoJor
+    - DATABASE_URL=postgres://postgres:postgres@customers-db:5432/customers_dev    # nuevo
+    - DATABASE_TEST_URL=postgres:postgres@customers-db:5432/customers_test  # nuevo
+
+  depends_on:  # nuevo
+    - customers-db
+
+ customers-db:  # nuevo
+   build:
+     context: ./services/customers/project/db
+     dockerfile: Dockerfile
+   ports:
+     - 5435:5432
+   environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
